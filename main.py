@@ -3,6 +3,7 @@ from modules.scrapers import mercado_libre_scraper
 from modules.scrapers import exito_scraper
 from modules import data_processing
 from modules import utils
+from modules import results
 from rich.console import Console
 import asyncio
 
@@ -18,8 +19,7 @@ def main():
     top_products = data_processing.process_data(products_mercado_libre, products_exito, product_name)
 
     console.rule("[bold red]Productos encontrados")
-    for product in top_products:
-        console.print(product)
+    results.display_results(top_products)
 
 
 main()
