@@ -18,8 +18,9 @@ def main():
     products_exito = asyncio.run(exito_scraper.manage_flow(product_name_exito))
     top_products = data_processing.process_data(products_mercado_libre, products_exito, product_name)
 
-    console.rule("[bold red]Productos encontrados")
+    console.print("\n")
+    console.rule("[bold white]Productos encontrados")
+    console.print("\n")
     results.display_results(top_products)
-
 
 main()

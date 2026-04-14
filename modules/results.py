@@ -14,6 +14,7 @@ def display_results(products: list[dict[str, str]]) -> None:
         None
     """
     for index, product in enumerate(products):
-        console.print(Panel.fit(f"Precio: {product['price']}\nEnvio: {product['shipping']}\n"
+        console.print(Panel(f"Precio: {product['price']}\nEnvio: {product['shipping']}\n"
         f'Rating: {product['rating']}\nLink: {product['link']}\nE-commerce: {product['source']}', 
-        title=f'Producto {index + 1}', subtitle=f'{product['title']}'))
+        title=f'[bold cyan]{product['title']}[/bold cyan]', subtitle=f'Producto {index + 1}', expand=True, padding=(0, 2), style="bright_white on grey11", border_style="cyan"))
+        console.print("\n")

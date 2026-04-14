@@ -16,12 +16,12 @@ def get_product_name() -> str:
     Returns:
         str: The product name entered by the user.
     """
-    console.rule("[bold red]Inicio de Aplicación")
+    console.rule("[bold white]Inicio de Aplicación")
 
     while True:
 
         product_name = Prompt.ask(
-            '\nIngrese el nombre general del producto a buscar (ej: ipad pro, ps5, laptop gaming) '
+            '\n\nIngrese el nombre general del producto a buscar (ej: ipad pro, ps5, laptop gaming) '
             'no sea muy específico si no es necesario. Evite errores ortográficos para obtener mejores resultados'
         )
 
