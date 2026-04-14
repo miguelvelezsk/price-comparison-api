@@ -3,7 +3,9 @@ This module contains a function in charge of handling errors.
 """
 
 from rich.console import Console
+from rich.progress import Progress
 
+progress = Progress()
 console = Console()
 error_messages = {
     'no_minimum_rating': 'No se encontraron productos con calificación mayor a 4 estrellas, te mostramos los mejores disponibles.',
@@ -26,6 +28,6 @@ def handle_error(error_type: str, product_name: str = "", e_commerce: str = "", 
         counter (int, optional): The counter of the attempts. Defaults to 0.
     """
     if error_type in error_messages:
-        console.print(f"Error: {error_messages[error_type].format(product_name, e_commerce, counter)}", style="bold red")
+        progress.console.print(f"Error: {error_messages[error_type].format(product_name, e_commerce, counter)}", style="bold red")
     else:
-        console.print(f"Error: {error_messages['regular_error']}", style="bold red")
+        progress.console.print(f"Error: {error_messages['regular_error']}", style="bold red")
