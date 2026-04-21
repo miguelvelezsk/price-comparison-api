@@ -4,7 +4,7 @@ This module contains the logic for scraping Exito.
 
 from playwright.async_api import async_playwright, ElementHandle, Page
 from modules import error_handler
-import sys
+from fastapi import HTTPException
 
 URL = "https://www.exito.com/s?q="
 
@@ -29,9 +29,10 @@ async def manage_flow(product_name: str) -> list[dict[str, str]]:
             else:
                 products = []
         return products
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        error_handler.handle_error('no_network_connection')
-        sys.exit()
+        error_handler.handle_error('no_network_connection', product_name, "Exito")
 
 async def search_product(page: Page, product_name: str) -> bool:
     """
@@ -48,16 +49,16 @@ async def search_product(page: Page, product_name: str) -> bool:
             await page.wait_for_selector('.product-grid_fs-product-grid___qKN2', timeout=10000)
             await page.screenshot(path="./screenshots/product_exito.jpg")
             return True
+        except HTTPException as e:
+            raise e
         except Exception as e:
             if count_of_attempts <= 2:
-                error_handler.handle_error('no_products_found', product_name, 'Exito', count_of_attempts)
+                error_handler.print_message('no_products_found', product_name, 'Exito', count_of_attempts)
                 count_of_attempts += 1
             else:
-                error_handler.handle_error('no_products_found_after_attempts', product_name, 'Exito')
+                error_handler.print_message('no_products_found_after_attempts', product_name, 'Exito', count_of_attempts)
                 return False
-                
-                
-    
+
 async def extract_products(page: Page) -> list[dict[str, str]]:
     """
     Extracts products attributes from the page.
@@ -81,9 +82,10 @@ async def extract_products(page: Page) -> list[dict[str, str]]:
             product_dict['shipping'] = "NE"
             product_list.append(product_dict)
         return product_list
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        error_handler.handle_error('unexpected_error')
-        sys.exit()
+        error_handler.handle_error('unexpected_error', e_commerce="Exito")
 
 async def safe_extract(selector: str, product: ElementHandle, method: str) -> str:
     """
@@ -105,9 +107,10 @@ async def safe_extract(selector: str, product: ElementHandle, method: str) -> st
             elif method == 'get_attribute':
                 return await element.get_attribute('href')
         return "NE"
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        error_handler.handle_error('unexpected_error')
-        sys.exit()
+        error_handler.handle_error('unexpected_error', e_commerce="Exito")
     
     
     

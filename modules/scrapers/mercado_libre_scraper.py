@@ -4,7 +4,7 @@ This module contains the logic for scraping Mercado Libre.
 
 from playwright.async_api import async_playwright, ElementHandle, Page
 from modules import error_handler
-import sys
+from fastapi import HTTPException
 
 URL = "https://listado.mercadolibre.com.co/"
 
@@ -29,9 +29,10 @@ async def manage_flow(product_name: str) -> list[dict[str, str]]:
             else:
                 products = []
         return products
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        error_handler.handle_error('no_network_connection')
-        sys.exit()
+        error_handler.handle_error('no_network_connection', e_commerce="Mercado Libre")
 
 async def search_product(page: Page, product_name: str) -> bool:
     """
@@ -48,15 +49,15 @@ async def search_product(page: Page, product_name: str) -> bool:
             await page.wait_for_selector('.ui-search-layout', timeout=10000)
             await page.screenshot(path="./screenshots/product_mercado_libre.jpg")
             return True
+        except HTTPException as e:
+            raise e
         except Exception as e:
             if count_of_attempts <= 2:
-                error_handler.handle_error('no_products_found', product_name, 'Mercado Libre', count_of_attempts)
+                error_handler.print_message('no_products_found', product_name, 'Mercado Libre', count_of_attempts)
                 count_of_attempts += 1
             else:
-                error_handler.handle_error('no_products_found_after_attempts', product_name, 'Mercado Libre')
+                error_handler.print_message('no_products_found_after_attempts', product_name, 'Mercado Libre', count_of_attempts)
                 return False
-                
-                
     
 async def extract_products(page: Page) -> list[dict[str, str]]:
     """
@@ -80,9 +81,11 @@ async def extract_products(page: Page) -> list[dict[str, str]]:
             product_dict['shipping'] = await safe_extract('.poly-component__shipping-v2', product, 'inner_text')
             product_list.append(product_dict)
         return product_list
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        error_handler.handle_error('unexpected_error')
-        sys.exit()
+        error_handler.handle_error('unexpected_error', e_commerce="Mercado Libre")
+        return []
 
 async def safe_extract(selector: str, product: ElementHandle, method: str) -> str:
     """
@@ -104,9 +107,10 @@ async def safe_extract(selector: str, product: ElementHandle, method: str) -> st
             elif method == 'get_attribute':
                 return await element.get_attribute('href')
         return "NE"
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        error_handler.handle_error('unexpected_error')
-        sys.exit()
+        error_handler.handle_error('unexpected_error', e_commerce="Mercado Libre")
     
     
     
