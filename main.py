@@ -12,6 +12,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 @app.get("/search")
 async def search_product(product_name: str):
     top_products = await orchestrator(product_name)
